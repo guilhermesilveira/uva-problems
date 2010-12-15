@@ -1,0 +1,5 @@
+acmicpc
+cccp
+macpac
+chimp
+camp

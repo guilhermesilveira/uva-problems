@@ -1,0 +1,42 @@
+
+int GCD(int a, int b)
+{
+    int r;
+
+    while(b){r = a % b; a = b; b = r;}
+
+    return(a);
+}
+
+
+long gcd( long a, long b)
+{
+  int t;
+
+  if (a < 0) a = -a;
+  if (!b) return a;
+  if (b < 0) b = -b;
+  if (!a) return b;
+  t = 0;
+  while (! ((a|b) & 1)) {a >>= 1; b >>= 1; ++t;}
+  while (! (a&1)) a >>= 1;                     
+  while (! (b&1)) b >>= 1;
+  while (a != b)
+     {
+     if (a > b)
+         {
+         a -= b; 
+         do {a >>= 1;} while (! (a&1));
+         }
+     else {
+         b -= a;
+         do {b >>= 1;} while (! (b&1));
+         }
+     }
+  return(a<<t);
+}
+
+
+long lcm(long a,long b) {
+	return (a*b)/gcd(a,b);
+}

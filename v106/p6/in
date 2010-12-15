@@ -1,0 +1,15 @@
+1
+2
+Graph 4 3
+node
+edge
+directed
+distance
+Geometrical 4 2
+point
+convex
+polygon
+boring
+This is neither a SQF problem nor a graph problem.
+This is a boring geometrical problem. In this problem
+you should calculate the convex area of a regular polygon.

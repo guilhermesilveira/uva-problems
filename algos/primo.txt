@@ -1,0 +1,26 @@
+#define bs_isprime(x) (((x) == 2) || (((x) & 1) && (bitsieve[(x)>>4] & (1 << (((x)>>1)&7)))) )
+#define _bs_set(x)     ( bitsieve[(x)>>4] |=  (1 << (((x)>>1)&7)) )
+#define _bs_unset(x)   ( bitsieve[(x)>>4] &= ~(1 << (((x)>>1)&7)) )
+
+vector<int> allprimes;
+
+char bitsieve[100000];
+
+void sieve(int upto)
+{
+   int i, j;
+   int isqrt_upto = (int)::sqrt( upto );
+
+   for ( i=3; i<=upto; i+=2 ) _bs_set(i);
+
+   for ( i=3; i<=isqrt_upto; i+=2 )
+      if ( bs_isprime(i) )
+         for ( j=i*i; j<=upto; j+=i+i )
+            _bs_unset( j );
+
+   allprimes.clear();
+   for ( i=2; i<=upto; ++i ) {
+       if ( bs_isprime(i) )
+           allprimes.push_back( i );
+   }
+}

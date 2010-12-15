@@ -1,0 +1,351 @@
+import java.io.IOException;
+import java.util.StringTokenizer;
+
+class BigNum {
+
+    static final int MAX = 1000;
+
+    static final long QUOTE = 100000;
+
+    static final int QUOTE_SIZE = 5;
+
+    static BigNum THREE = new BigNum(3);
+
+    static BigNum TWO = new BigNum(2);
+
+    static BigNum ONE = new BigNum(1);
+
+    static BigNum ZERO = new BigNum(0);
+
+    int max = 0;
+
+    long[] mag;
+
+    BigNum(int i) {
+        mag = new long[MAX];
+        for (int z = 0; z != MAX; z++) {
+            mag[z] = 0;
+        }
+        while (i != 0) {
+            mag[max++] = i % QUOTE;
+            i /= QUOTE;
+        }
+    }
+
+    BigNum(String s) {
+        this(0);
+        s = s.trim();
+        int size = s.length();
+        int p = 0;
+        for (; s.charAt(p) == 0 && p != size; p++)
+            ;
+        if (p == size) {
+            return;
+        }
+        int i = size;
+        String st;
+        while (true) {
+            if (i - p <= QUOTE_SIZE) {
+                mag[max++] = Integer.parseInt(s.substring(p,i));
+                break;
+            }
+            st = s.substring(i - QUOTE_SIZE, i);
+            mag[max++] = Integer.parseInt(st);
+            i -= QUOTE_SIZE;
+        }
+        if(mag[max-1]==0) {
+        	max--;
+        }
+    }
+
+    // both are positive, result is also positive
+    void sub(BigNum b) {
+        long temp;
+        for (int i = 0; i != this.max; i++) {
+            temp = this.mag[i] - b.mag[i];
+            if (temp < 0) {
+                // vou ter que puxar do anterior
+                this.mag[i + 1]--;
+                temp += QUOTE;
+            }
+            this.mag[i] = temp;
+        }
+        while (this.max != 0 && this.mag[this.max - 1] == 0)
+            this.max--;
+    }
+
+    public BigNum multiply(int val) {
+        BigNum a = new BigNum(this);
+        long tempToAdd = 0;
+        for (int i = 0; i != a.max; i++) {
+            a.mag[i] *= val;
+            a.mag[i] += tempToAdd;
+            tempToAdd = 0;
+            if (a.mag[i] >= QUOTE) {
+                tempToAdd = (a.mag[i] / QUOTE);
+                a.mag[i] = a.mag[i] % QUOTE;
+                if (i + 1 == a.max) {
+                    a.max++;
+                }
+            }
+        }
+        return a;
+    }
+
+    BigNum(BigNum b) {
+        this.max = b.max;
+        mag = new long[MAX];
+        for (int z = 0; z != MAX; z++) {
+            mag[z] = b.mag[z];
+        }
+    }
+
+    BigNum add(BigNum b) {
+    	long temp;
+        BigNum th = this;
+        if (th.max > b.max) {
+            th = b;
+            b = this;
+        }
+        BigNum a = new BigNum(th);
+        a.max = b.max;
+        for (int i = 0; i != b.max; i++) {
+            temp = b.mag[i] + a.mag[i];
+            if (temp >= QUOTE) {
+                a.mag[i + 1]++;
+                a.mag[i] = temp - QUOTE;
+                if (i + 1 == a.max) {
+                    a.max++;
+                }
+            } else {
+	            a.mag[i] = temp;
+            }
+        }
+        return a;
+    }
+
+    /* adiciona e muda esse aqui, TESTAR!!! */
+    void addMut(BigNum b) {
+        int mx = b.max>this.max?this.max:b.max, i;
+        for (i = 0; i != mx; i++) {
+            mag[i] += b.mag[i];
+            if (mag[i] >= QUOTE) {
+                mag[i + 1]++;
+                mag[i] -= QUOTE;
+                if (i + 1 == max) {
+		    mag[i+1] = 1;
+                    max++;
+                }
+            }
+        }
+        for(;i<b.max;i++) {
+          mag[i] = b.mag[i];
+        }
+        max = i;
+    }
+
+    /* multiply mutable */    
+    public void multiplyMut(int val) {
+        long tempToAdd = 0;
+        for (int i = 0; i != max; i++) {
+            mag[i] *= val;
+            mag[i] += tempToAdd;
+            tempToAdd = 0;
+            if (mag[i] >= QUOTE) {
+                tempToAdd = (mag[i] / QUOTE);
+                mag[i] = mag[i] % QUOTE;
+                if (i + 1 == max) {
+		    mag[i+1] = 0;
+                    max++;
+                }
+            }
+        }
+    }
+
+    public String toString() {
+        if (max == 0) {
+            return "0";
+        }
+        StringBuffer s = new StringBuffer();
+        long z, toAdd;
+        for (int i = max; i > 0; i--) {
+            if (i != max) {
+                if (mag[i - 1] == 0) {
+                    for (z = 0; z != QUOTE_SIZE; z++) {
+                        s.append("0");
+                    }
+                    continue;
+                }
+                z = mag[i - 1];
+                toAdd = QUOTE_SIZE;
+                while (z != 0) {
+                    z /= 10;
+                    toAdd--;
+                }
+                // se nao for o primeiro objeto
+                while (toAdd-- != 0) {
+                    s.append("0");
+                }
+            }
+            s.append("" + mag[i - 1]);
+        }
+        return s.toString();
+    }
+
+}
+
+class Main {
+
+
+
+    public static void main(String args[]) throws Exception {
+	while(true) {
+		String s = readLine();
+		if(s==null) break;
+		s = s.trim();
+		int len = s.length();
+		BigNum b = new BigNum(s);
+		BigNum d = new BigNum(s);
+		String t = s + s;
+		int i = 2;
+		for(i=2;i<=len;i++) {
+			d.addMut(b);
+			String k = d.toString().trim();
+			//System.out.println("* " + i + " = " + k);
+			if(t.indexOf(k)==-1) {
+				break;
+			}
+		}
+		if(i>len) {
+			System.out.println(s + " is cyclic");
+		} else {
+			System.out.println(s + " is not cyclic");
+		}
+	}
+    }
+
+    static String[] split(String s) {
+        StringTokenizer st = new StringTokenizer(s, ",");
+        String[] tokens = new String[st.countTokens()];
+        for (int i = 0; i != tokens.length; i++) {
+            tokens[i] = st.nextToken();
+        }
+        return tokens;
+    }
+    
+    static int maxLg = 200;
+
+    // le uma linha inteira
+    static String readLine() throws IOException {
+
+        byte lin[] = new byte[maxLg];
+        int lg = 0, car = -1;
+
+        while (lg < maxLg) {
+            car = System.in.read();
+            if ((car < 0) || (car == '\n')) {
+                break;
+            }
+            lin[lg++] += car;
+        }
+
+        if ((car < 0) && (lg == 0)) {
+            return (null); // eof
+        }
+
+        return (new String(lin, 0, lg));
+
+    }
+
+}
+
+
+
+import java.util.StringTokenizer;
+import java.io.IOException;
+import java.util.Vector;
+
+class Main {
+
+    static int maxLg = 200;
+
+    public static void sort(Vector v) {
+        int n = v.size();
+        Vector v2 = new Vector();
+        char us[] = new char[n];
+        int j, t,i;
+        P p1, p2;
+        for(i=0;i<n;i++) {
+            p1 = null;
+            t = -1;
+            for(j=0;j<n;j++) {
+                if(us[j]==1) continue;
+                p2 = (P) v.elementAt(j);
+                if(p1==null || p1.compareTo(p2)>0) {
+                    t = j;
+                    p1 = p2;
+                }
+            }
+            us[t] = 1;
+            v2.addElement(p1);
+        }
+        v.removeAllElements();
+        for(i=0;i!=n;i++) {
+            v.addElement(v2.elementAt(i));
+        }
+    }
+
+    public static void main(String args[]) throws Exception {
+    }
+
+    static String[] split(String s) {
+        StringTokenizer st = new StringTokenizer(s, ",");
+        String[] tokens = new String[st.countTokens()];
+        for (int i = 0; i != tokens.length; i++) {
+            tokens[i] = st.nextToken();
+        }
+        return tokens;
+    }
+
+    // le uma linha inteira
+    static String readLine() throws IOException {
+
+        byte lin[] = new byte[maxLg];
+        int lg = 0, car = -1;
+
+        while (lg < maxLg) {
+            car = System.in.read();
+            if ((car < 0) || (car == '\n')) {
+                break;
+            }
+            lin[lg++] += car;
+        }
+
+        if ((car < 0) && (lg == 0)) {
+            return (null); // eof
+        }
+
+        return (new String(lin, 0, lg));
+
+    }
+
+    static long[] splitLongLine(String s) {
+        String[] l = split(s);
+        long v[] = new long[l.length];
+        for (int i = 0; i != l.length; i++) {
+            v[i] = Long.valueOf(l[i]).longValue();
+        }
+        return v;
+    }
+
+}
+
+class P {
+    
+    public int compareTo(Object o) {
+        P p = (P) o;
+        return 0;
+    }
+    
+}
+

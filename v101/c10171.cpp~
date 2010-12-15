@@ -1,0 +1,19 @@
+#include <iostream>
+using namespace std;
+
+#define FOR(a,b) for(a=0;a<b;a++)
+
+int n;
+
+void st() {
+}
+
+int main() {
+
+  while((cin >> n) && n){
+    st();
+  }
+  return 0;
+
+}
+

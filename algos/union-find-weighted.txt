@@ -1,0 +1,40 @@
+// UNION FIND
+
+#include <iostream>
+#include <stdio.h>
+
+using namespace std;
+
+
+int main() {
+
+	int a,b;
+
+	int i, j, p, q, t, *id = new int[500000], *sz = new int[500000], cas=0;
+	bool *bol = new bool[500000];
+
+	while((scanf("%d %d",&a,&b)==2)) {
+		if(!a && !b) break;
+		for(i=0;i<a;i++) { id[i] = i; bol[i]=0; }
+		while(b--) {
+			scanf("%d %d",&p,&q);
+		   	for (i = --p; i != id[i]; i = id[i]) ;
+		       for (j = --q; j != id[j]; j = id[j]) ;
+		       if (i == j) continue;
+		       if (sz[i] < sz[j]) { 
+		          id[i] = j; sz[j] += sz[i]; 
+		       } else { 
+		          id[j] = i; sz[i] += sz[j];
+		       }
+		}
+		t = 0;
+		for(i=0;i<a;i++) {
+		       for (j = i; j != id[j]; j = id[j]) ;
+			if(!bol[j]) { t++; bol[j]=1; }
+		}
+		printf("Case %d: %d\n",++cas,t);
+	}
+
+	return 0;
+
+}

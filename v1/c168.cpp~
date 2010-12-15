@@ -1,0 +1,31 @@
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#define FOR(a,b) for(a=0;a<b;a++)
+
+using namespace std;
+
+bool con[300][300];
+
+int main() {
+
+  int i,j,k,l;
+  char s[10000];
+  int len;
+  while((gets(s))) {
+    len = strlen(s);
+    FOR(i,300) FOR(j,300) con[i][j] = 0;
+    i = 0;
+    while(true) {
+      atual = s[i];
+      i++;
+      while(s[i]!=';' && s[i]!='.') {
+	if(s[i]!=':') {
+	  con[atual][s[i]] = 1;
+	}
+	i++;
+      }
+    }
+  }
+  return 0;
+}
